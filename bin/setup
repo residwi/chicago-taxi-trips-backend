@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+set -e
+
+echo "Downloading chicago_taxi_trips_2020.parquet"
+curl -L --progress-bar "https://drive.usercontent.google.com/download?id=1qaCwmmr6fBTzGFH171-vdZbPNeFIgiBs&export=download&confirm=y" -o "chicago_taxi_trips_2020.parquet"
