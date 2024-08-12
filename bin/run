@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+set -e
+
+if [ -z "$1" ]; then
+    APPLICATION_PORT=8080
+else
+    APPLICATION_PORT=$1
+fi
+
+echo -e "Starting the server on port $APPLICATION_PORT\n"
+
+PORT=$APPLICATION_PORT GIN_MODE=release PARQUET_FILE_PATH=./chicago_taxi_trips_2020.parquet go run main.go
