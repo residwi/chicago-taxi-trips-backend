@@ -49,7 +49,7 @@ func (suite *TripTestSuite) TestGetTotalTripsByDateRangeFailed() {
 	result, err := tripService.GetTotalTripsByDateRange(startDate, endDate)
 
 	require.EqualError(suite.T(), err, assert.AnError.Error())
-	assert.Equal(suite.T(), []model.TotalTrips{}, result)
+	assert.Nil(suite.T(), result)
 }
 
 func (suite *TripTestSuite) TestGetAverageSpeedByDateSuccess() {
@@ -76,7 +76,7 @@ func (suite *TripTestSuite) TestGetAverageSpeedByDateFailed() {
 	result, err := tripService.GetAverageSpeedByDate(date)
 
 	require.EqualError(suite.T(), err, assert.AnError.Error())
-	assert.Equal(suite.T(), []model.AverageSpeed{}, result)
+	assert.Nil(suite.T(), result)
 }
 
 func (suite *TripTestSuite) TestGetAverageFareHeatmapByDateSuccess() {
@@ -108,5 +108,5 @@ func (suite *TripTestSuite) TestGetAverageFareHeatmapByDateFailed() {
 	result, err := tripService.GetAverageFareHeatmapByDate(date)
 
 	require.EqualError(suite.T(), err, assert.AnError.Error())
-	assert.Equal(suite.T(), []model.AverageFareHeatmap{}, result)
+	assert.Nil(suite.T(), result)
 }

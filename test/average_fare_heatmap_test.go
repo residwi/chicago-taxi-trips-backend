@@ -50,3 +50,17 @@ func (suite *AverageFareHeatmapTestSuite) TestAverageFareHeatmapByDate() {
 	assert.Equal(suite.T(), "application/json; charset=utf-8", responseRecorder.Header().Get("Content-Type"))
 	assert.JSONEq(suite.T(), string(expectedResponse), responseRecorder.Body.String())
 }
+
+func (suite *AverageFareHeatmapTestSuite) TestAverageFareHeatmapByDateWhenNoData() {
+	responseRecorder := httptest.NewRecorder()
+	request, _ := http.NewRequest(http.MethodGet, "/average_fare_heatmap?date=2027-02-23", nil)
+	router := router.SetupRouter()
+	handler.NewTrip(router, suite.tripService)
+
+	router.ServeHTTP(responseRecorder, request)
+
+	expectedResponse, _ := json.Marshal(gin.H{"data": nil})
+	assert.Equal(suite.T(), http.StatusOK, responseRecorder.Code)
+	assert.Equal(suite.T(), "application/json; charset=utf-8", responseRecorder.Header().Get("Content-Type"))
+	assert.JSONEq(suite.T(), string(expectedResponse), responseRecorder.Body.String())
+}

@@ -30,7 +30,7 @@ func (t *Trip) GetTotalTripsByDateRange(startDate time.Time, endDate time.Time) 
 	if err != nil {
 		log.Error(err)
 
-		return []model.TotalTrips{}, err
+		return nil, err
 	}
 
 	return totalTrips, nil
@@ -41,7 +41,7 @@ func (t *Trip) GetAverageSpeedByDate(date time.Time) ([]model.AverageSpeed, erro
 	if err != nil {
 		log.Error(err)
 
-		return []model.AverageSpeed{}, err
+		return nil, err
 	}
 
 	return averageSpeed, nil
@@ -52,7 +52,7 @@ func (t *Trip) GetAverageFareHeatmapByDate(date time.Time) ([]model.AverageFareH
 	if err != nil {
 		log.Error(err)
 
-		return []model.AverageFareHeatmap{}, err
+		return nil, err
 	}
 
 	fareSums := make(map[s2.CellID]float64)

@@ -36,7 +36,7 @@ func (t *TripRepository) GetTotalTripsByDateRange(startDate time.Time, endDate t
 	if err != nil {
 		log.Error(err)
 
-		return []model.TotalTrips{}, err
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -74,7 +74,7 @@ func (t *TripRepository) GetAverageSpeedByDate(date time.Time) (averageSpeed []m
 	if err != nil && err != sql.ErrNoRows {
 		log.Error(err)
 
-		return []model.AverageSpeed{}, err
+		return nil, err
 	}
 
 	if !avgSpeed.Valid {
@@ -107,7 +107,7 @@ func (t *TripRepository) GetPickupLocationFareByDate(date time.Time) (farePerLoc
 	if err != nil {
 		log.Error(err)
 
-		return []model.FarePerLocation{}, err
+		return nil, err
 	}
 	defer rows.Close()
 

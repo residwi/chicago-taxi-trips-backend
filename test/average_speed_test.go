@@ -51,3 +51,17 @@ func (suite *AverageSpeedTestSuite) TestAverageSpeed24hoursByDate() {
 	assert.Equal(suite.T(), "application/json; charset=utf-8", responseRecorder.Header().Get("Content-Type"))
 	assert.JSONEq(suite.T(), string(expectedResponse), responseRecorder.Body.String())
 }
+
+func (suite *AverageSpeedTestSuite) TestAverageSpeed24hoursByDateWhenNoData() {
+	responseRecorder := httptest.NewRecorder()
+	request, _ := http.NewRequest(http.MethodGet, "/average_speed_24hrs?date=2027-01-01", nil)
+	router := router.SetupRouter()
+	handler.NewTrip(router, suite.tripService)
+
+	router.ServeHTTP(responseRecorder, request)
+
+	expectedResponse, _ := json.Marshal(gin.H{"data": nil})
+	assert.Equal(suite.T(), http.StatusOK, responseRecorder.Code)
+	assert.Equal(suite.T(), "application/json; charset=utf-8", responseRecorder.Header().Get("Content-Type"))
+	assert.JSONEq(suite.T(), string(expectedResponse), responseRecorder.Body.String())
+}

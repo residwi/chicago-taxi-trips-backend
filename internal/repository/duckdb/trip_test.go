@@ -100,9 +100,7 @@ func (suite *TripRepositoryTestSuite) TestGetTotalTripsByDateRangeErrorQuery() {
 
 	require.Error(suite.T(), err)
 	assert.Len(suite.T(), result, 0)
-
-	expectedResult := []model.TotalTrips{}
-	assert.Equal(suite.T(), expectedResult, result)
+	assert.Nil(suite.T(), result)
 }
 
 func (suite *TripRepositoryTestSuite) TestGetTotalTripsByDateRangeErrorScan() {
@@ -171,7 +169,7 @@ func (suite *TripRepositoryTestSuite) TestGetAverageSpeedByDateSuccess() {
 }
 
 func (suite *TripRepositoryTestSuite) TestGetAverageSpeedByDateNullValue() {
-	startDate, _ := time.Parse(time.DateOnly, "2020-01-01")
+	date, _ := time.Parse(time.DateOnly, "2020-01-01")
 
 	rows := sqlmock.NewRows([]string{"average_speed"}).
 		AddRow(nil)
@@ -189,16 +187,14 @@ func (suite *TripRepositoryTestSuite) TestGetAverageSpeedByDateNullValue() {
 		RowsWillBeClosed()
 
 	repo := NewTripRepository(suite.db)
-	result, err := repo.GetAverageSpeedByDate(startDate)
+	result, err := repo.GetAverageSpeedByDate(date)
 
 	require.NoError(suite.T(), err)
-
-	var expectedResult []model.AverageSpeed
-	assert.Equal(suite.T(), expectedResult, result)
+	assert.Nil(suite.T(), result)
 }
 
 func (suite *TripRepositoryTestSuite) TestGetAverageSpeedByDateErrorQuery() {
-	startDate, _ := time.Parse(time.DateOnly, "2020-01-01")
+	date, _ := time.Parse(time.DateOnly, "2020-01-01")
 
 	expectedQuery := `
 		SELECT
@@ -213,12 +209,12 @@ func (suite *TripRepositoryTestSuite) TestGetAverageSpeedByDateErrorQuery() {
 		RowsWillBeClosed()
 
 	repo := NewTripRepository(suite.db)
-	result, err := repo.GetAverageSpeedByDate(startDate)
+	result, err := repo.GetAverageSpeedByDate(date)
 
 	require.Error(suite.T(), err)
 	assert.Len(suite.T(), result, 0)
 
-	expectedResult := []model.AverageSpeed{}
+	var expectedResult []model.AverageSpeed
 	assert.Equal(suite.T(), expectedResult, result)
 }
 
@@ -282,9 +278,7 @@ func (suite *TripRepositoryTestSuite) TestGetPickupLocationFareByDateErrorQuery(
 
 	require.Error(suite.T(), err)
 	assert.Len(suite.T(), result, 0)
-
-	expectedResult := []model.FarePerLocation{}
-	assert.Equal(suite.T(), expectedResult, result)
+	assert.Nil(suite.T(), result)
 }
 
 func (suite *TripRepositoryTestSuite) TestGetPickupLocationFareByDateErrorScan() {
