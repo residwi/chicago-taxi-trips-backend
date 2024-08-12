@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -e
+
+if ! type go > /dev/null 2>&1; then
+    echo "Please install golang first"
+    exit 1
+fi
+
+[[ ! -f "./mockery" ]] && GOBIN=$(pwd) go install github.com/vektra/mockery/v2@v2.44.1
+
+./mockery "$@"
