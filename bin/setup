@@ -2,5 +2,12 @@
 
 set -e
 
-echo "Downloading chicago_taxi_trips_2020.parquet"
-curl -L --progress-bar "https://drive.usercontent.google.com/download?id=1qaCwmmr6fBTzGFH171-vdZbPNeFIgiBs&export=download&confirm=y" -o "chicago_taxi_trips_2020.parquet"
+echo "== Download chicago_taxi_trips_2020.parquet =="
+if [ ! -f "chicago_taxi_trips_2020.parquet" ]; then
+  curl -L --progress-bar "https://drive.usercontent.google.com/download?id=1qaCwmmr6fBTzGFH171-vdZbPNeFIgiBs&export=download&confirm=y" -o "chicago_taxi_trips_2020.parquet"
+else
+  echo -e "\nchicago_taxi_trips_2020.parquet already exists"
+fi
+
+echo -e "\n== Running all tests =="
+./bin/test
