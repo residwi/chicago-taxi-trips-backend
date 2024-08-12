@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -e
+
+ALL_PACKAGES=$(go list ./... | grep -v "mocks")
+
+# shellcheck disable=SC2086
+go test -race -failfast -coverprofile=coverage.out $ALL_PACKAGES
+
+COVERAGE=$(go tool cover -func=coverage.out | tail -n 1 | awk '{print $3}')
+echo -e "\nTotal Coverage: $COVERAGE"
