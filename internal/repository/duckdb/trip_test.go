@@ -170,6 +170,33 @@ func (suite *TripRepositoryTestSuite) TestGetAverageSpeedByDateSuccess() {
 	assert.Equal(suite.T(), expectedResult, result)
 }
 
+func (suite *TripRepositoryTestSuite) TestGetAverageSpeedByDateNullValue() {
+	startDate, _ := time.Parse(time.DateOnly, "2020-01-01")
+
+	rows := sqlmock.NewRows([]string{"average_speed"}).
+		AddRow(nil)
+
+	expectedQuery := `
+		SELECT
+			AVG((((trip_miles * 1.60934) / trip_seconds) * 3600)) AS average_speed
+		FROM 'stub-parquet-path.parquet'
+		WHERE CAST(trip_end_timestamp AS DATE) BETWEEN $1::date - INTERVAL '24 hour' AND $1
+    `
+
+	suite.mockDB.ExpectQuery(regexp.QuoteMeta(expectedQuery)).
+		WithArgs("2020-01-01").
+		WillReturnRows(rows).
+		RowsWillBeClosed()
+
+	repo := NewTripRepository(suite.db)
+	result, err := repo.GetAverageSpeedByDate(startDate)
+
+	require.NoError(suite.T(), err)
+
+	var expectedResult []model.AverageSpeed
+	assert.Equal(suite.T(), expectedResult, result)
+}
+
 func (suite *TripRepositoryTestSuite) TestGetAverageSpeedByDateErrorQuery() {
 	startDate, _ := time.Parse(time.DateOnly, "2020-01-01")
 

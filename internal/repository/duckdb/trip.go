@@ -69,15 +69,19 @@ func (t *TripRepository) GetAverageSpeedByDate(date time.Time) (averageSpeed []m
 		WHERE CAST(trip_end_timestamp AS DATE) BETWEEN $1::date - INTERVAL '24 hour' AND $1
     `
 
-	var avgSpeed float64
+	var avgSpeed sql.NullFloat64
 	err = t.conn.QueryRow(query, date.Format(time.DateOnly)).Scan(&avgSpeed)
-	if err != nil {
+	if err != nil && err != sql.ErrNoRows {
 		log.Error(err)
 
 		return []model.AverageSpeed{}, err
 	}
 
-	avgSpeedOnlyTwoDecimal := math.Floor(avgSpeed*100) / 100
+	if !avgSpeed.Valid {
+		return nil, nil
+	}
+
+	avgSpeedOnlyTwoDecimal := math.Floor(avgSpeed.Float64*100) / 100
 	averageSpeed = append(averageSpeed, model.AverageSpeed{
 		AverageSpeed: avgSpeedOnlyTwoDecimal,
 	})
