@@ -84,3 +84,40 @@ func (t *TripRepository) GetAverageSpeedByDate(date time.Time) (averageSpeed []m
 
 	return averageSpeed, nil
 }
+
+func (t *TripRepository) GetPickupLocationFareByDate(date time.Time) (farePerLocations []model.FarePerLocation, err error) {
+	parquetFilepath := os.Getenv("PARQUET_FILE_PATH")
+
+	query := `
+		SELECT
+			pickup_latitude,
+            pickup_longitude,
+            fare
+		FROM '` + parquetFilepath + `'
+		WHERE CAST(trip_start_timestamp AS DATE) = $1
+		AND pickup_latitude IS NOT NULL
+		AND pickup_longitude IS NOT NULL
+    `
+
+	rows, err := t.conn.Query(query, date.Format(time.DateOnly))
+	if err != nil {
+		log.Error(err)
+
+		return []model.FarePerLocation{}, err
+	}
+	defer rows.Close()
+
+	var farePerLocation model.FarePerLocation
+	for rows.Next() {
+		err := rows.Scan(&farePerLocation.Latitude, &farePerLocation.Longitude, &farePerLocation.Fare)
+		if err != nil {
+			log.Error(err)
+
+			continue
+		}
+
+		farePerLocations = append(farePerLocations, farePerLocation)
+	}
+
+	return farePerLocations, nil
+}

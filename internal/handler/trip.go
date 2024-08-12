@@ -17,6 +17,7 @@ func NewTrip(router *gin.Engine, service service.ITrip) {
 
 	router.GET("/total_trips", handler.TotalTrips)
 	router.GET("/average_speed_24hrs", handler.AverageSpeed)
+	router.GET("/average_fare_heatmap", handler.AvarageFareHeatmap)
 }
 
 func validateDate(dateString string) (time.Time, error) {

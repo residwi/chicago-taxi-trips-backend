@@ -78,3 +78,35 @@ func (suite *TripTestSuite) TestGetAverageSpeedByDateFailed() {
 	require.EqualError(suite.T(), err, assert.AnError.Error())
 	assert.Equal(suite.T(), []model.AverageSpeed{}, result)
 }
+
+func (suite *TripTestSuite) TestGetAverageFareHeatmapByDateSuccess() {
+	date, _ := time.Parse(time.DateOnly, "2020-01-01")
+
+	farePerLocations := []model.FarePerLocation{
+		{Latitude: 41.92276062, Longitude: -87.699155343, Fare: 45.0},
+		{Latitude: 41.92276062, Longitude: -87.699155343, Fare: 5},
+		{Latitude: 41.92276062, Longitude: -87.699155343, Fare: 9.5},
+	}
+	tripRepositoryMock := mocks.NewMockITrip(suite.T())
+	tripRepositoryMock.EXPECT().GetPickupLocationFareByDate(date).Return(farePerLocations, nil)
+
+	tripService := NewTrip(tripRepositoryMock)
+	result, err := tripService.GetAverageFareHeatmapByDate(date)
+
+	expectedAverageFareHeatmaps := []model.AverageFareHeatmap{{S2ID: "880fcd625", AverageFare: 19.83}}
+	require.NoError(suite.T(), err)
+	assert.Equal(suite.T(), expectedAverageFareHeatmaps, result)
+}
+
+func (suite *TripTestSuite) TestGetAverageFareHeatmapByDateFailed() {
+	date, _ := time.Parse(time.DateOnly, "2020-01-01")
+
+	tripRepositoryMock := mocks.NewMockITrip(suite.T())
+	tripRepositoryMock.EXPECT().GetPickupLocationFareByDate(date).Return([]model.FarePerLocation{}, assert.AnError)
+
+	tripService := NewTrip(tripRepositoryMock)
+	result, err := tripService.GetAverageFareHeatmapByDate(date)
+
+	require.EqualError(suite.T(), err, assert.AnError.Error())
+	assert.Equal(suite.T(), []model.AverageFareHeatmap{}, result)
+}

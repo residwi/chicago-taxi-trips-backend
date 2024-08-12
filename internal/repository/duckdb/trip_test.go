@@ -194,3 +194,105 @@ func (suite *TripRepositoryTestSuite) TestGetAverageSpeedByDateErrorQuery() {
 	expectedResult := []model.AverageSpeed{}
 	assert.Equal(suite.T(), expectedResult, result)
 }
+
+func (suite *TripRepositoryTestSuite) TestGetPickupLocationFareByDateSuccess() {
+	date, _ := time.Parse(time.DateOnly, "2020-01-01")
+
+	rows := sqlmock.NewRows([]string{"pickup_latitude", "pickup_longitude", "fare"}).
+		AddRow(111, 222, 10).
+		AddRow(111, 222, 27)
+
+	expectedQuery := `
+		SELECT
+			pickup_latitude,
+            pickup_longitude,
+            fare
+		FROM 'stub-parquet-path.parquet'
+		WHERE CAST(trip_start_timestamp AS DATE) = $1
+		AND pickup_latitude IS NOT NULL
+		AND pickup_longitude IS NOT NULL
+    `
+
+	suite.mockDB.ExpectQuery(regexp.QuoteMeta(expectedQuery)).
+		WithArgs("2020-01-01").
+		WillReturnRows(rows).
+		RowsWillBeClosed()
+
+	repo := NewTripRepository(suite.db)
+	result, err := repo.GetPickupLocationFareByDate(date)
+
+	require.NoError(suite.T(), err)
+	assert.Len(suite.T(), result, 2)
+
+	expectedResult := []model.FarePerLocation{
+		{Latitude: 111, Longitude: 222, Fare: 10},
+		{Latitude: 111, Longitude: 222, Fare: 27},
+	}
+	assert.Equal(suite.T(), expectedResult, result)
+}
+
+func (suite *TripRepositoryTestSuite) TestGetPickupLocationFareByDateErrorQuery() {
+	date, _ := time.Parse(time.DateOnly, "2020-01-01")
+
+	expectedQuery := `
+		SELECT
+			pickup_latitude,
+            pickup_longitude,
+            fare
+		FROM 'stub-parquet-path.parquet'
+		WHERE CAST(trip_start_timestamp AS DATE) = $1
+		AND pickup_latitude IS NOT NULL
+		AND pickup_longitude IS NOT NULL
+    `
+
+	suite.mockDB.ExpectQuery(regexp.QuoteMeta(expectedQuery)).
+		WithArgs("2020-01-01").
+		WillReturnError(assert.AnError).
+		RowsWillBeClosed()
+
+	repo := NewTripRepository(suite.db)
+	result, err := repo.GetPickupLocationFareByDate(date)
+
+	require.Error(suite.T(), err)
+	assert.Len(suite.T(), result, 0)
+
+	expectedResult := []model.FarePerLocation{}
+	assert.Equal(suite.T(), expectedResult, result)
+}
+
+func (suite *TripRepositoryTestSuite) TestGetPickupLocationFareByDateErrorScan() {
+	date, _ := time.Parse(time.DateOnly, "2020-01-01")
+
+	rows := sqlmock.NewRows([]string{"pickup_latitude", "pickup_longitude", "fare"}).
+		AddRow(111, 222, 10).
+		AddRow(nil, 222, 50).
+		AddRow(123, 456, 27)
+
+	expectedQuery := `
+		SELECT
+			pickup_latitude,
+            pickup_longitude,
+            fare
+		FROM 'stub-parquet-path.parquet'
+		WHERE CAST(trip_start_timestamp AS DATE) = $1
+		AND pickup_latitude IS NOT NULL
+		AND pickup_longitude IS NOT NULL
+    `
+
+	suite.mockDB.ExpectQuery(regexp.QuoteMeta(expectedQuery)).
+		WithArgs("2020-01-01").
+		WillReturnRows(rows).
+		RowsWillBeClosed()
+
+	repo := NewTripRepository(suite.db)
+	result, err := repo.GetPickupLocationFareByDate(date)
+
+	require.NoError(suite.T(), err)
+	assert.Len(suite.T(), result, 2)
+
+	expectedResult := []model.FarePerLocation{
+		{Latitude: 111, Longitude: 222, Fare: 10},
+		{Latitude: 123, Longitude: 456, Fare: 27},
+	}
+	assert.Equal(suite.T(), expectedResult, result)
+}
