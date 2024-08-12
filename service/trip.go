@@ -11,6 +11,7 @@ import (
 
 type ITrip interface {
 	GetTotalTripsByDateRange(startDate time.Time, endDate time.Time) ([]model.TotalTrips, error)
+	GetAverageSpeedByDate(date time.Time) ([]model.AverageSpeed, error)
 }
 
 type Trip struct {
@@ -30,4 +31,15 @@ func (t *Trip) GetTotalTripsByDateRange(startDate time.Time, endDate time.Time) 
 	}
 
 	return totalTrips, nil
+}
+
+func (t *Trip) GetAverageSpeedByDate(date time.Time) ([]model.AverageSpeed, error) {
+	averageSpeed, err := t.tripRepository.GetAverageSpeedByDate(date)
+	if err != nil {
+		log.Error(err)
+
+		return []model.AverageSpeed{}, err
+	}
+
+	return averageSpeed, nil
 }

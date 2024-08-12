@@ -3,22 +3,9 @@ package handler
 import (
 	"fmt"
 	"net/http"
-	"time"
-
-	"github.com/residwi/chicago-taxi-trips-backend/service"
 
 	"github.com/gin-gonic/gin"
 )
-
-type Trip struct {
-	service service.ITrip
-}
-
-func NewTrip(router *gin.Engine, service service.ITrip) {
-	handler := &Trip{service: service}
-
-	router.GET("/total_trips", handler.TotalTrips)
-}
 
 func (t *Trip) TotalTrips(c *gin.Context) {
 	if c.Query("start") == "" {
@@ -61,12 +48,4 @@ func (t *Trip) TotalTrips(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"data": totalTrips})
-}
-
-func validateDate(dateString string) (time.Time, error) {
-	date, err := time.Parse(time.DateOnly, dateString)
-	if err != nil {
-		return time.Time{}, err
-	}
-	return date, nil
 }

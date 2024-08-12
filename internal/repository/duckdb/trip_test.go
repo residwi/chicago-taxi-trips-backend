@@ -141,3 +141,56 @@ func (suite *TripRepositoryTestSuite) TestGetTotalTripsByDateRangeErrorScan() {
 	}
 	assert.Equal(suite.T(), expectedResult, result)
 }
+
+func (suite *TripRepositoryTestSuite) TestGetAverageSpeedByDateSuccess() {
+	date, _ := time.Parse(time.DateOnly, "2020-01-01")
+
+	rows := sqlmock.NewRows([]string{"average_speed"}).
+		AddRow(123.45678910)
+
+	expectedQuery := `
+		SELECT
+			AVG((((trip_miles * 1.60934) / trip_seconds) * 3600)) AS average_speed
+		FROM 'stub-parquet-path.parquet'
+		WHERE CAST(trip_end_timestamp AS DATE) BETWEEN $1::date - INTERVAL '24 hour' AND $1
+    `
+
+	suite.mockDB.ExpectQuery(regexp.QuoteMeta(expectedQuery)).
+		WithArgs("2020-01-01").
+		WillReturnRows(rows).
+		RowsWillBeClosed()
+
+	repo := NewTripRepository(suite.db)
+	result, err := repo.GetAverageSpeedByDate(date)
+
+	require.NoError(suite.T(), err)
+	assert.Len(suite.T(), result, 1)
+
+	expectedResult := []model.AverageSpeed{{AverageSpeed: 123.45}}
+	assert.Equal(suite.T(), expectedResult, result)
+}
+
+func (suite *TripRepositoryTestSuite) TestGetAverageSpeedByDateErrorQuery() {
+	startDate, _ := time.Parse(time.DateOnly, "2020-01-01")
+
+	expectedQuery := `
+		SELECT
+			AVG((((trip_miles * 1.60934) / trip_seconds) * 3600)) AS average_speed
+		FROM 'stub-parquet-path.parquet'
+		WHERE CAST(trip_end_timestamp AS DATE) BETWEEN $1::date - INTERVAL '24 hour' AND $1
+    `
+
+	suite.mockDB.ExpectQuery(regexp.QuoteMeta(expectedQuery)).
+		WithArgs("2020-01-01").
+		WillReturnError(assert.AnError).
+		RowsWillBeClosed()
+
+	repo := NewTripRepository(suite.db)
+	result, err := repo.GetAverageSpeedByDate(startDate)
+
+	require.Error(suite.T(), err)
+	assert.Len(suite.T(), result, 0)
+
+	expectedResult := []model.AverageSpeed{}
+	assert.Equal(suite.T(), expectedResult, result)
+}

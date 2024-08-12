@@ -2,6 +2,7 @@ package duckdb
 
 import (
 	"database/sql"
+	"math"
 	"os"
 	"time"
 
@@ -56,4 +57,30 @@ func (t *TripRepository) GetTotalTripsByDateRange(startDate time.Time, endDate t
 	}
 
 	return totalTrips, nil
+}
+
+func (t *TripRepository) GetAverageSpeedByDate(date time.Time) (averageSpeed []model.AverageSpeed, err error) {
+	parquetFilepath := os.Getenv("PARQUET_FILE_PATH")
+
+	query := `
+		SELECT
+			AVG((((trip_miles * 1.60934) / trip_seconds) * 3600)) AS average_speed
+		FROM '` + parquetFilepath + `'
+		WHERE CAST(trip_end_timestamp AS DATE) BETWEEN $1::date - INTERVAL '24 hour' AND $1
+    `
+
+	var avgSpeed float64
+	err = t.conn.QueryRow(query, date.Format(time.DateOnly)).Scan(&avgSpeed)
+	if err != nil {
+		log.Error(err)
+
+		return []model.AverageSpeed{}, err
+	}
+
+	avgSpeedOnlyTwoDecimal := math.Floor(avgSpeed*100) / 100
+	averageSpeed = append(averageSpeed, model.AverageSpeed{
+		AverageSpeed: avgSpeedOnlyTwoDecimal,
+	})
+
+	return averageSpeed, nil
 }

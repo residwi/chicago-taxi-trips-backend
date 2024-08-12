@@ -23,6 +23,64 @@ func (_m *MockITrip) EXPECT() *MockITrip_Expecter {
 	return &MockITrip_Expecter{mock: &_m.Mock}
 }
 
+// GetAverageSpeedByDate provides a mock function with given fields: date
+func (_m *MockITrip) GetAverageSpeedByDate(date time.Time) ([]model.AverageSpeed, error) {
+	ret := _m.Called(date)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetAverageSpeedByDate")
+	}
+
+	var r0 []model.AverageSpeed
+	var r1 error
+	if rf, ok := ret.Get(0).(func(time.Time) ([]model.AverageSpeed, error)); ok {
+		return rf(date)
+	}
+	if rf, ok := ret.Get(0).(func(time.Time) []model.AverageSpeed); ok {
+		r0 = rf(date)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]model.AverageSpeed)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(time.Time) error); ok {
+		r1 = rf(date)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MockITrip_GetAverageSpeedByDate_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetAverageSpeedByDate'
+type MockITrip_GetAverageSpeedByDate_Call struct {
+	*mock.Call
+}
+
+// GetAverageSpeedByDate is a helper method to define mock.On call
+//   - date time.Time
+func (_e *MockITrip_Expecter) GetAverageSpeedByDate(date interface{}) *MockITrip_GetAverageSpeedByDate_Call {
+	return &MockITrip_GetAverageSpeedByDate_Call{Call: _e.mock.On("GetAverageSpeedByDate", date)}
+}
+
+func (_c *MockITrip_GetAverageSpeedByDate_Call) Run(run func(date time.Time)) *MockITrip_GetAverageSpeedByDate_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(time.Time))
+	})
+	return _c
+}
+
+func (_c *MockITrip_GetAverageSpeedByDate_Call) Return(_a0 []model.AverageSpeed, _a1 error) *MockITrip_GetAverageSpeedByDate_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockITrip_GetAverageSpeedByDate_Call) RunAndReturn(run func(time.Time) ([]model.AverageSpeed, error)) *MockITrip_GetAverageSpeedByDate_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // GetTotalTripsByDateRange provides a mock function with given fields: startDate, endDate
 func (_m *MockITrip) GetTotalTripsByDateRange(startDate time.Time, endDate time.Time) ([]model.TotalTrips, error) {
 	ret := _m.Called(startDate, endDate)
