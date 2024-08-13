@@ -148,9 +148,11 @@ func (suite *TripRepositoryTestSuite) TestGetAverageSpeedByDateSuccess() {
 
 	expectedQuery := `
 		SELECT
-			AVG((((trip_miles * 1.60934) / trip_seconds) * 3600)) AS average_speed
+			(SUM(trip_miles) * 1.60934) / (SUM(trip_seconds) / 3600) AS average_speed
 		FROM 'stub-parquet-path.parquet'
 		WHERE CAST(trip_end_timestamp AS DATE) BETWEEN $1::date - INTERVAL '24 hour' AND $1
+		AND trip_seconds > 0
+		AND trip_miles > 0
     `
 
 	suite.mockDB.ExpectQuery(regexp.QuoteMeta(expectedQuery)).
@@ -176,9 +178,11 @@ func (suite *TripRepositoryTestSuite) TestGetAverageSpeedByDateNullValue() {
 
 	expectedQuery := `
 		SELECT
-			AVG((((trip_miles * 1.60934) / trip_seconds) * 3600)) AS average_speed
+			(SUM(trip_miles) * 1.60934) / (SUM(trip_seconds) / 3600) AS average_speed
 		FROM 'stub-parquet-path.parquet'
 		WHERE CAST(trip_end_timestamp AS DATE) BETWEEN $1::date - INTERVAL '24 hour' AND $1
+		AND trip_seconds > 0
+		AND trip_miles > 0
     `
 
 	suite.mockDB.ExpectQuery(regexp.QuoteMeta(expectedQuery)).
@@ -198,9 +202,11 @@ func (suite *TripRepositoryTestSuite) TestGetAverageSpeedByDateErrorQuery() {
 
 	expectedQuery := `
 		SELECT
-			AVG((((trip_miles * 1.60934) / trip_seconds) * 3600)) AS average_speed
+			(SUM(trip_miles) * 1.60934) / (SUM(trip_seconds) / 3600) AS average_speed
 		FROM 'stub-parquet-path.parquet'
 		WHERE CAST(trip_end_timestamp AS DATE) BETWEEN $1::date - INTERVAL '24 hour' AND $1
+		AND trip_seconds > 0
+		AND trip_miles > 0
     `
 
 	suite.mockDB.ExpectQuery(regexp.QuoteMeta(expectedQuery)).

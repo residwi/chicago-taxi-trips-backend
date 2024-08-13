@@ -43,7 +43,7 @@ func (suite *AverageSpeedTestSuite) TestAverageSpeed24hoursByDate() {
 	router.ServeHTTP(responseRecorder, request)
 
 	expectedAverageSpeed := []model.AverageSpeed{
-		{AverageSpeed: 23.31},
+		{AverageSpeed: 32.02},
 	}
 
 	expectedResponse, _ := json.Marshal(gin.H{"data": expectedAverageSpeed})
