@@ -13,6 +13,9 @@ down:
 test:
 	@echo "== Running all tests =="
 	@go test -race -failfast -coverprofile=coverage.out $(ALL_PACKAGES)
+	@$(MAKE) coverage
+
+coverage:
 	@echo "\nTotal Coverage:" $(shell go tool cover -func=coverage.out | tail -n 1 | awk '{print $$3}')
 
 fmt:

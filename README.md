@@ -177,6 +177,9 @@ make test
 go test ./internal/handler/...
 go test ./service/...
 go test ./test/...
+
+# View coverage report
+make coverage
 ```
 
 ### Code Quality
