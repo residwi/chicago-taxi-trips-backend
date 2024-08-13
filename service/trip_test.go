@@ -83,9 +83,7 @@ func (suite *TripTestSuite) TestGetAverageFareHeatmapByDateSuccess() {
 	date, _ := time.Parse(time.DateOnly, "2020-01-01")
 
 	farePerLocations := []model.FarePerLocation{
-		{Latitude: 41.92276062, Longitude: -87.699155343, Fare: 45.0},
-		{Latitude: 41.92276062, Longitude: -87.699155343, Fare: 5},
-		{Latitude: 41.92276062, Longitude: -87.699155343, Fare: 9.5},
+		{Latitude: 41.92276062, Longitude: -87.699155343, AverageFare: 19.833333332},
 	}
 	tripRepositoryMock := mocks.NewMockITrip(suite.T())
 	tripRepositoryMock.EXPECT().GetPickupLocationFareByDate(date).Return(farePerLocations, nil)

@@ -55,25 +55,16 @@ func (t *Trip) GetAverageFareHeatmapByDate(date time.Time) ([]model.AverageFareH
 		return nil, err
 	}
 
-	fareSums := make(map[s2.CellID]float64)
-	fareCounts := make(map[s2.CellID]int)
 	s2Level := 16
-
+	var averageFareHeatmaps []model.AverageFareHeatmap
 	for _, farePerPickupLocation := range farePerPickupLocations {
 		cellID := s2.CellFromLatLng(s2.LatLngFromDegrees(farePerPickupLocation.Latitude, farePerPickupLocation.Longitude)).
 			ID().
 			Parent(s2Level)
 
-		fareSums[cellID] += farePerPickupLocation.Fare
-		fareCounts[cellID]++
-	}
-
-	var averageFareHeatmaps []model.AverageFareHeatmap
-	for cellID, sum := range fareSums {
-		averageFare := sum / float64(fareCounts[cellID])
 		averageFareHeatmaps = append(averageFareHeatmaps, model.AverageFareHeatmap{
 			S2ID:        cellID.ToToken(),
-			AverageFare: math.Floor(averageFare*100) / 100,
+			AverageFare: math.Floor(farePerPickupLocation.AverageFare*100) / 100,
 		})
 	}
 

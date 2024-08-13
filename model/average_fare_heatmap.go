@@ -6,7 +6,7 @@ type AverageFareHeatmap struct {
 }
 
 type FarePerLocation struct {
-	Latitude  float64
-	Longitude float64
-	Fare      float64
+	Latitude    float64
+	Longitude   float64
+	AverageFare float64
 }

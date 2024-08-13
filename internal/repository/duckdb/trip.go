@@ -96,11 +96,12 @@ func (t *TripRepository) GetPickupLocationFareByDate(date time.Time) (farePerLoc
 		SELECT
 			pickup_latitude,
             pickup_longitude,
-            fare
+            AVG(fare)
 		FROM '` + parquetFilepath + `'
 		WHERE CAST(trip_start_timestamp AS DATE) = $1
 		AND pickup_latitude IS NOT NULL
 		AND pickup_longitude IS NOT NULL
+		GROUP BY pickup_latitude, pickup_longitude
     `
 
 	rows, err := t.conn.Query(query, date.Format(time.DateOnly))
@@ -113,7 +114,7 @@ func (t *TripRepository) GetPickupLocationFareByDate(date time.Time) (farePerLoc
 
 	var farePerLocation model.FarePerLocation
 	for rows.Next() {
-		err := rows.Scan(&farePerLocation.Latitude, &farePerLocation.Longitude, &farePerLocation.Fare)
+		err := rows.Scan(&farePerLocation.Latitude, &farePerLocation.Longitude, &farePerLocation.AverageFare)
 		if err != nil {
 			log.Error(err)
 

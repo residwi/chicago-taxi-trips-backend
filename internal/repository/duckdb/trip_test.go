@@ -229,11 +229,12 @@ func (suite *TripRepositoryTestSuite) TestGetPickupLocationFareByDateSuccess() {
 		SELECT
 			pickup_latitude,
             pickup_longitude,
-            fare
+            AVG(fare)
 		FROM 'stub-parquet-path.parquet'
 		WHERE CAST(trip_start_timestamp AS DATE) = $1
 		AND pickup_latitude IS NOT NULL
 		AND pickup_longitude IS NOT NULL
+		GROUP BY pickup_latitude, pickup_longitude
     `
 
 	suite.mockDB.ExpectQuery(regexp.QuoteMeta(expectedQuery)).
@@ -248,8 +249,8 @@ func (suite *TripRepositoryTestSuite) TestGetPickupLocationFareByDateSuccess() {
 	assert.Len(suite.T(), result, 2)
 
 	expectedResult := []model.FarePerLocation{
-		{Latitude: 111, Longitude: 222, Fare: 10},
-		{Latitude: 111, Longitude: 222, Fare: 27},
+		{Latitude: 111, Longitude: 222, AverageFare: 10},
+		{Latitude: 111, Longitude: 222, AverageFare: 27},
 	}
 	assert.Equal(suite.T(), expectedResult, result)
 }
@@ -261,11 +262,12 @@ func (suite *TripRepositoryTestSuite) TestGetPickupLocationFareByDateErrorQuery(
 		SELECT
 			pickup_latitude,
             pickup_longitude,
-            fare
+            AVG(fare)
 		FROM 'stub-parquet-path.parquet'
 		WHERE CAST(trip_start_timestamp AS DATE) = $1
 		AND pickup_latitude IS NOT NULL
 		AND pickup_longitude IS NOT NULL
+		GROUP BY pickup_latitude, pickup_longitude
     `
 
 	suite.mockDB.ExpectQuery(regexp.QuoteMeta(expectedQuery)).
@@ -293,11 +295,12 @@ func (suite *TripRepositoryTestSuite) TestGetPickupLocationFareByDateErrorScan()
 		SELECT
 			pickup_latitude,
             pickup_longitude,
-            fare
+            AVG(fare)
 		FROM 'stub-parquet-path.parquet'
 		WHERE CAST(trip_start_timestamp AS DATE) = $1
 		AND pickup_latitude IS NOT NULL
 		AND pickup_longitude IS NOT NULL
+		GROUP BY pickup_latitude, pickup_longitude
     `
 
 	suite.mockDB.ExpectQuery(regexp.QuoteMeta(expectedQuery)).
@@ -312,8 +315,8 @@ func (suite *TripRepositoryTestSuite) TestGetPickupLocationFareByDateErrorScan()
 	assert.Len(suite.T(), result, 2)
 
 	expectedResult := []model.FarePerLocation{
-		{Latitude: 111, Longitude: 222, Fare: 10},
-		{Latitude: 123, Longitude: 456, Fare: 27},
+		{Latitude: 111, Longitude: 222, AverageFare: 10},
+		{Latitude: 123, Longitude: 456, AverageFare: 27},
 	}
 	assert.Equal(suite.T(), expectedResult, result)
 }
