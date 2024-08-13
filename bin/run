@@ -8,6 +8,13 @@ else
     APPLICATION_PORT=$1
 fi
 
-echo -e "Starting the server on port $APPLICATION_PORT\n"
+echo "Starting the server on port $APPLICATION_PORT"
 
-PORT=$APPLICATION_PORT GIN_MODE=release PARQUET_FILE_PATH=./chicago_taxi_trips_2020.parquet go run main.go
+docker run \
+    -e GIN_MODE=release \
+    -e PARQUET_FILE_PATH=/dataset/chicago_taxi_trips_2020.parquet \
+    -e PORT="$APPLICATION_PORT" \
+    -v "$(pwd)"/dataset:/dataset \
+    --network=host \
+    --rm \
+    taxi-trips
