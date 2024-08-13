@@ -27,7 +27,7 @@ func TestAverageSpeedSuite(t *testing.T) {
 }
 
 func (suite *AverageSpeedTestSuite) SetupTest() {
-	suite.T().Setenv("PARQUET_FILE_PATH", "../chicago_taxi_trips_2020.parquet")
+	suite.T().Setenv("PARQUET_FILE_PATH", "../dataset/chicago_taxi_trips_2020.parquet")
 	gin.SetMode(gin.TestMode)
 	connDB := duckdb.CreateConnection()
 	tripRepository := duckdb.NewTripRepository(connDB)

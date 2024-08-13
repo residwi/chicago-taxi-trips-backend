@@ -32,7 +32,7 @@ func (suite *AverageFareHeatmapTestSuite) SetupTest() {
 	tripRepository := duckdb.NewTripRepository(connDB)
 	suite.tripService = service.NewTrip(tripRepository)
 
-	connDB.Exec("CREATE TABLE test AS SELECT * FROM '../chicago_taxi_trips_2020.parquet' ORDER BY __index_level_0__ ASC LIMIT 10")
+	connDB.Exec("CREATE TABLE test AS SELECT * FROM '../dataset/chicago_taxi_trips_2020.parquet' ORDER BY __index_level_0__ ASC LIMIT 10")
 	suite.T().Setenv("PARQUET_FILE_PATH", "test")
 }
 
