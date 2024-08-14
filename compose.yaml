@@ -1,9 +1,10 @@
 services:
   app:
+    image: taxi-trips
     build:
       context: .
     environment:
       - PARQUET_FILE_PATH=/app/dataset/chicago_taxi_trips_2020.parquet
     volumes:
-      - .:/app
+      - ./dataset:/app/dataset
     network_mode: host
