@@ -12,7 +12,8 @@ down:
 .PHONY: test
 test:
 	@echo "== Running all tests =="
-	@go test -race -failfast -coverprofile=coverage.out $(ALL_PACKAGES)
+	@# https://github.com/golang/go/issues/61229#issuecomment-1988965927
+	@go test -race -ldflags=-extldflags=-Wl,-w -failfast -coverprofile=coverage.out $(ALL_PACKAGES)
 	@$(MAKE) coverage
 
 coverage:
