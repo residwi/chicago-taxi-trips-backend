@@ -3,8 +3,10 @@ services:
     image: taxi-trips
     build:
       context: .
+    pull_policy: never
     environment:
       - PARQUET_FILE_PATH=/app/dataset/chicago_taxi_trips_2020.parquet
+    ports:
+      - 8080:8080
     volumes:
       - ./dataset:/app/dataset
-    network_mode: host
