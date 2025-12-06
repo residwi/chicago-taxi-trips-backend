@@ -16,7 +16,7 @@ This project demonstrates clean architecture principles, comprehensive testing s
 
 ### Tech Stack
 
-- Go 1.22.6 ([https://github.com/golang/go](https://github.com/golang/go))
+- Golang ([https://github.com/golang/go](https://github.com/golang/go))
 - Gin framework ([https://github.com/gin-gonic/gin](https://github.com/gin-gonic/gin)) - HTTP routing and middleware
 - DuckDB database ([https://github.com/marcboeker/go-duckdb](https://github.com/marcboeker/go-duckdb)) - Analytical SQL database for fast queries on Parquet data
 - S2 Geometry ([https://github.com/golang/geo](https://github.com/golang/geo)) - Geospatial indexing for clustering and location-based analysis
@@ -48,7 +48,7 @@ This project demonstrates clean architecture principles, comprehensive testing s
 
 ### Prerequisites
 
-- **Go** 1.22+
+- **Go** 1.25+
 - **Docker** & Docker Compose
 
 ### Installation
